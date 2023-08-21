@@ -1,65 +1,83 @@
 import requests
 from pprint import pprint
 from bs4 import BeautifulSoup
+from fastapi import FastAPI
 
-# Movie Search
-# URL = 'https://www.imdb.com/search/title/?groups=top_100&ref_=adv_prv'
-# headers = {'Accept-Language': 'en-US, en;q=0.5'}
-# results = requests.get(URL, headers=headers)
-# movie_soup = BeautifulSoup(results.text, 'html.parser')
+app = FastAPI()
 
-# movie_names = []
-# movie_div = movie_soup.find_all('div', class_='lister-item mode-advanced')
-
-# for index, container in enumerate(movie_div):
-#       name = container.h3.a.text
-#       movie_names.append(f'{index+1}. {name}')
-
-# pprint.pprint(movie_names)
-
-# Actor Search
-query = input('Actor name: ')
-query = query.split(' ')
-query = '_'.join(query)
-
-session = requests.Session()
-base_url = 'https://www.rottentomatoes.com'
-url = f'{base_url}/celebrity/{query}'
-
-headers = {'Accept-Language': 'en-US, en;q=0.5'}
-response = session.get(url, headers=headers)
-
-actor_soup = BeautifulSoup(response.text, 'html.parser')
-
-movie_names = []
-
-a_tags = actor_soup.select("table tr td a")
-for index, tag in enumerate(a_tags):
+# get actor filmography
+@app.get('/get_filmography/{actor_name}')
+async def get_filmography(actor_name: str):
+  query = actor_name.replace(' ', '_')
+  
+  session = requests.Session()
+  base_url = 'https://www.rottentomatoes.com'
+  url = f'{base_url}/celebrity/{query}'
+  
+  headers = {'Accept-Language': 'en-US, en;q=0.5'}
+  
+  response = session.get(url, headers=headers)
+  
+  actor_soup = BeautifulSoup(response.text, 'html.parser')
+  
+  movie_names = []
+  
+  a_tags = actor_soup.select('table tr td a')
+  
+  for index, tag in enumerate(a_tags):
     text = tag.get_text()
-    print(f"{index + 1}. {text}")
+    movie_names.extend(text)
+    
+  return {'Filmography': movie_names}
 
+# get movie cast
+@app.get('/get_movie_cast/{movie_name}')
+async def get_movie_cast(movie_name: str):
+  query = movie_name.replace(' ', '_')
 
+  session = requests.Session()
+  base_url = 'https://www.rottentomatoes.com'
+  url = f'{base_url}/m/{query}'
+    
+  headers = {'Accept-Language': 'en-US, en;q=0.5'}
+    
+  response = session.get(url, headers=headers)
 
-# movie_div = actor_soup.find_all('div', class_='scroll-x')
+  movie_soup = BeautifulSoup(response.text, 'html.parser')
 
-# for index, container in enumerate(movie_div):
-#     name = container.table.a.text
-#     movie_names.append(f'{index+1}. {name}')
-# pprint(movie_names)
+  cast_names = []
 
-# for movie_table in movie_div:
-#     table = movie_table.find('tbody', class_='celebrity-filmography__tbody')
+  all_cast_members = movie_soup.find_all('div', class_='cast-and-crew-item')
+  # pprint(all_cast_members)
+    
+  for index, actor_names in enumerate(all_cast_members):
+    name_elements = actor_names.find('div', class_='metadata')
+    cast_names.extend(name_elements.a.p)
+  
+  return {'Movie Cast': cast_names}
 
-# for table_row in table:
-#     title = table_row.find_all('td', class_='celebrity-filmography__title')
-#     movie_names.append(title)
-    # movie_names.append(movie_name)
+# get movie cast
+@app.get('/get_tv_cast/{show_name}')
+async def get_tv_cast(show_name: str):
+  query = show_name.replace(' ', '_')
 
-# pprint(movie_names)
-# actor_div = actor_soup.find_all('div', class_='lister-item-content')
-# for container in actor_div:
-#       actor_url = container.h3.a['href']
-      
-# actor_url = f'{base_url}{actor_url}'
-# response = session.get('https://www.imdb.com/title/tt0322330/fullcredits')
-# pprint.pprint(response)
+  session = requests.Session()
+  base_url = 'https://www.rottentomatoes.com'
+  url = f'{base_url}/tv/{query}'
+    
+  headers = {'Accept-Language': 'en-US, en;q=0.5'}
+    
+  response = session.get(url, headers=headers)
+
+  tv_soup = BeautifulSoup(response.text, 'html.parser')
+
+  cast_names = []
+
+  all_cast_members = tv_soup.find_all('div', class_='cast-and-crew-item')
+  # pprint(all_cast_members)
+    
+  for index, actor_names in enumerate(all_cast_members):
+    name_elements = actor_names.find('div', class_='metadata')
+    cast_names.extend(name_elements.a.p)
+  
+  return {'TV Cast': cast_names}
