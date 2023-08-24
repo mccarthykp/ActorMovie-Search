@@ -48,7 +48,6 @@ async def get_movie_cast(movie_name: str):
   cast_names = []
 
   all_cast_members = movie_soup.find_all('div', class_='cast-and-crew-item')
-  # pprint(all_cast_members)
     
   for index, actor_names in enumerate(all_cast_members):
     name_elements = actor_names.find('div', class_='metadata')
@@ -74,7 +73,6 @@ async def get_tv_cast(show_name: str):
   cast_names = []
 
   all_cast_members = tv_soup.find_all('div', class_='cast-and-crew-item')
-  # pprint(all_cast_members)
     
   for index, actor_names in enumerate(all_cast_members):
     name_elements = actor_names.find('div', class_='metadata')
