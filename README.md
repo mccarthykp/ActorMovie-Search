@@ -3,8 +3,9 @@ A Rotten Tomatoes web scraper using BeautifulSoup4, written in Python.
 ## How to Run
 1. Download Repo `git clone`
 2. Enter project folder
-3. Create new virtual environment with `source venv/bin/activate`
-4. Install dependencies using `pip install -r requirements.txt`
+3. Create a new virtual environment `python -m venv venv`
+4. Activate the venv `source venv/bin/activate`
+4. Install dependencies `pip install -r requirements.txt`
 5. Run with `uvicorn app:app --reload`
 
 ## How to Use
