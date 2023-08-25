@@ -54,7 +54,7 @@ async def get_movie_cast(movie_name: str):
   
   return {'Movie Cast': cast_names}
 
-# get movie cast
+# get tv cast
 @app.get('/get_tv_cast/{show_name}')
 async def get_tv_cast(show_name: str):
   query = show_name.replace(' ', '_')
