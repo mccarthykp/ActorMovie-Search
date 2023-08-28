@@ -1,4 +1,4 @@
-# TomatoGrove
+# TomatoTrove
 A Rotten Tomatoes web scraper using BeautifulSoup4.
 ## How to Run
 1. Download Repo `git clone`
